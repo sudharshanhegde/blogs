@@ -295,11 +295,16 @@ STATE_MIDLINE  — middle of a line
                if byte is '\n' or '\r': forward byte, → STATE_NEWLINE
                otherwise: forward byte, stay in STATE_MIDLINE
 
-STATE_ESCAPE   — we saw newline + ~, waiting for command
+STATE_ESCAPE   —> we saw newline + ~, waiting for command
+
                '.' → disconnect
+
                '~' → send literal '~', → STATE_MIDLINE
+
                '^Z' → suspend (SIGTSTP to self)
+
                '?' → print help
+               
                otherwise → send '~' + byte, → STATE_MIDLINE
 
 
