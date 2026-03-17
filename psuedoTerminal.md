@@ -287,15 +287,22 @@ Current ssh_client.c already handles basic PTY setup,we will add :
 
 State machine will have three states:
 
-STATE_NEWLINE  — we just saw a newline (or it's the start)
+STATE_NEWLINE ->
+            
+               we just saw a newline (or it's the start)
                if next byte is '~': → STATE_ESCAPE
                otherwise: forward byte, → STATE_MIDLINE
 
-STATE_MIDLINE  — middle of a line
+STATE_MIDLINE ->
+
+                middle of a line
                if byte is '\n' or '\r': forward byte, → STATE_NEWLINE
                otherwise: forward byte, stay in STATE_MIDLINE
 
-STATE_ESCAPE   —> we saw newline + ~, waiting for command
+STATE_ESCAPE   ->
+
+
+         we saw newline + ~, waiting for command
 
                '.' → disconnect
 
@@ -304,9 +311,13 @@ STATE_ESCAPE   —> we saw newline + ~, waiting for command
                '^Z' → suspend (SIGTSTP to self)
 
                '?' → print help
-               
+
                otherwise → send '~' + byte, → STATE_MIDLINE
 
 
-3. SendEnv -> after PTY is requested but before shell is started we need to send SSH_MSG_CHANNEL_REQUEST with type "env" for each environment variable which matches SendEnv patterns, It lets us propogate variables like LANG or COLORTERM to remote session. API call will be ssh_channel_request_env(channel,"LANG,getenv("LANG)).
+3. SendEnv -> after PTY is requested but before shell is started we need to send SSH_MSG_CHANNEL_REQUEST with type "env" for each environment variable which matches SendEnv patterns, It lets us propogate variables like LANG or COLORTERM to remote session. 
+
+API call will be :
+
+```ssh_channel_request_env(channel,"LANG,getenv("LANG)).```
 
