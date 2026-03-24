@@ -18,7 +18,7 @@ We will be at terminal on our client, server needs to give vim property such tha
 PTY is pair of file descriptors created by kernel :
 
 master fd  <------------- bytes flow both ways ------------>  slave fd
-(your SSH client / server side that controls it)           (given to the remote program as its stdin/stdout/stderr)
+(our SSH client / server side that controls it)           (given to the remote program as its stdin/stdout/stderr)
 
 - Slave side looks like real terminal to any program which opens it.
 Program will check isatty(fd) ? -> this will return true.
@@ -290,13 +290,13 @@ State machine will have three states:
 STATE_NEWLINE ->
             
                we just saw a newline (or it's the start)
-               if next byte is '~': → STATE_ESCAPE
-               otherwise: forward byte, → STATE_MIDLINE
+               if next byte is '~': -> STATE_ESCAPE
+               otherwise: forward byte, -> STATE_MIDLINE
 
 STATE_MIDLINE ->
 
                 middle of a line
-               if byte is '\n' or '\r': forward byte, → STATE_NEWLINE
+               if byte is '\n' or '\r': forward byte, -> STATE_NEWLINE
                otherwise: forward byte, stay in STATE_MIDLINE
 
 STATE_ESCAPE   ->
@@ -304,15 +304,15 @@ STATE_ESCAPE   ->
 
          we saw newline + ~, waiting for command
 
-               '.' → disconnect
+               '.' -> disconnect
 
-               '~' → send literal '~', → STATE_MIDLINE
+               '~' -> send literal '~', -> STATE_MIDLINE
 
-               '^Z' → suspend (SIGTSTP to self)
+               '^Z' -> suspend (SIGTSTP to self)
 
-               '?' → print help
+               '?' -> print help
 
-               otherwise → send '~' + byte, → STATE_MIDLINE
+               otherwise -> send '~' + byte, -> STATE_MIDLINE
 
 
 3. SendEnv -> after PTY is requested but before shell is started we need to send SSH_MSG_CHANNEL_REQUEST with type "env" for each environment variable which matches SendEnv patterns, It lets us propogate variables like LANG or COLORTERM to remote session. 
