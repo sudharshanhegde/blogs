@@ -188,3 +188,4 @@ Currently any libssh application that reads SSH config (scripts, deployment tool
 | src/config.c | `SOC_UNSUPPORTED` → `SOC_BATCHMODE`, add parsing case |
 | tests/unittests/torture_options.c | Unit test: set option, verify stored |
 | tests/unittests/torture_config.c | Config test: parse `BatchMode yes/no`, verify stored |
+
