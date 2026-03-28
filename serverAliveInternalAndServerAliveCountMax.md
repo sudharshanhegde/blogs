@@ -107,6 +107,7 @@ case SSH_OPTIONS_SERVER_ALIVE_COUNT_MAX:
     break;
 ```
 
+
 The negative check matters: a negative interval makes no sense and a negative count would cause the keepalive loop to never disconnect. We reject them with `ssh_set_error_invalid()`.
 
 ### Step 4 -> Promote in config.c
