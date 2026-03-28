@@ -241,3 +241,4 @@ Today `forwardagent` is `SOC_UNSUPPORTED` -> writing `ForwardAgent yes` in `~/.s
 | src/config.c | `SOC_UNSUPPORTED` to `SOC_FORWARDAGENT`, parse with `ssh_config_get_yesno` |
 | tests/unittests/torture_options.c | Unit test: set 1, verify stored; set 0, verify stored |
 | tests/unittests/torture_config.c | Config test: parse `ForwardAgent yes`, verify 1 stored |
+ 
