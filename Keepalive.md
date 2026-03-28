@@ -228,3 +228,4 @@ Promoting these options means any libssh application amd not just our CLI also g
 | (src/poll.c) | `ssh_event_dopoll`  the timer-based event loop we will be using |
 | (src/config.c) | `serveraliveinterval`, `serveralivecountmax`, `tcpkeepalive` all at SOC_UNSUPPORTED |
 | (include/libssh/libssh.h) | `SSH_GLOBAL_REQUEST_KEEPALIVE` in `enum ssh_global_requests_e` |
+
