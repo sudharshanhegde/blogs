@@ -328,3 +328,4 @@ At the CLI level: the `examples/ssh_X11_client.c` file exists as an API demonstr
 | src/config.c | All X11 directives at SOC_NA |
 | examples/ssh_X11_client.c | Full X11 client example is there `x11_get_proto()`, display parsing, DISPLAY connection |
 | tests/unittests/torture_server_x11.c| Unit test for x11-req, shows callback wiring |
+ 
