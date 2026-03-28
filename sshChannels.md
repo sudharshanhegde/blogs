@@ -20,9 +20,9 @@ A channel is a logical, independent data stream multiplexed inside one SSH conne
 Every TCP packet has this structure:
 
 ```
-Packet length  → 4 bytes
-Pad_length     → 1 byte
-Payload        → variable length
+Packet length  -> 4 bytes
+Pad_length     -> 1 byte
+Payload        -> variable length
 Padding
 ```
 
@@ -221,27 +221,28 @@ ssh_channel on_remote_forward(ssh_session session,
 
 ```
 Packet arrives: SSH_MSG_CHANNEL_DATA  channel_number=0  payload="hello"
-  → libssh looks up channel 0 → calls on_channel_data for channel 0
+  -> libssh looks up channel 0 -> calls on_channel_data for channel 0
 
 Packet arrives: SSH_MSG_CHANNEL_DATA  channel_number=1  payload="GET /"
-  → libssh looks up channel 1 → calls on_channel_data for channel 1
+  -> libssh looks up channel 1 -> calls on_channel_data for channel 1
 
 Packet arrives: SSH_MSG_CHANNEL_OPEN  type="auth-agent@openssh.com"
-  → libssh calls on_agent_request callback
+  -> libssh calls on_agent_request callback
 ```
 
 We set different callbacks on each channel. libssh routes incoming packets to the right callback using the channel number. The event loop doesn't know or care how many channels are open.
 
 ---
 
-## SSH Flag → Channel Type Reference
+## SSH Flag -> Channel Type Reference
 
 | SSH Flag | Channel Type | Direction | libssh API Call |
 |----------|-------------|-----------|-----------------|
-| *(shell)* | `session` | client → server | `ssh_channel_open_session()` |
-| `-L` | `direct-tcpip` | client → server | `ssh_channel_open_forward()` |
-| `-R` | `forwarded-tcpip` | server → client | `ssh_channel_listen_forward()` + callback |
-| `-D` | `direct-tcpip` | client → server | `ssh_channel_open_forward()` (dest from SOCKS5) |
-| `-A` | `auth-agent` | server → client | `ssh_channel_open_auth_agent()` via callback |
-| `-X` / `-Y` | `x11` | server → client | `ssh_channel_request_x11()` + callback |
-| `-W` | `direct-tcpip` | client → server | `ssh_channel_open_forward()` (stdio connected directly) |
+| *(shell)* | `session` | client -> server | `ssh_channel_open_session()` |
+| `-L` | `direct-tcpip` | client -> server | `ssh_channel_open_forward()` |
+| `-R` | `forwarded-tcpip` | server -> client | `ssh_channel_listen_forward()` + callback |
+| `-D` | `direct-tcpip` | client -> server | `ssh_channel_open_forward()` (dest from SOCKS5) |
+| `-A` | `auth-agent` | server -> client | `ssh_channel_open_auth_agent()` via callback |
+| `-X` / `-Y` | `x11` | server -> client | `ssh_channel_request_x11()` + callback |
+| `-W` | `direct-tcpip` | client -> server | `ssh_channel_open_forward()` (stdio connected directly) |
+
