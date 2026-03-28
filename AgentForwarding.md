@@ -435,3 +435,4 @@ Our CLI should:
 | include/libssh/callbacks.h| `ssh_channel_open_request_auth_agent_callback`, `ssh_channel_auth_agent_req_callback` |
 | src/config.c| `forwardagent` = SOC_UNSUPPORTED, `identityagent` = SOC_IDENTITYAGENT (already works) |
 | tests/client/torture_auth_agent_forwarding.c| Integration tests showing full forwarding flow |
+
