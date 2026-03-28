@@ -4,7 +4,7 @@ SSH port forwarding is also called as tunnelling which lets us route arbitrary T
 
 ---
 
-## The Three Types — Mental Model First
+## The Three Types -> Mental Model First
 
 ```
 LOCAL  (-L)  :  our machine listens  →  traffic goes through SSH  →  server connects to target
@@ -148,7 +148,7 @@ Now anyone on the internet hitting `ssh.company.com:9090` gets connected to our 
 Internet user  ->TCP ->  ssh.company.com:9090  -> SSH ->  Laptop -> TCP ->  localhost:8080
 ```
 
-### SSH Protocol — Two-Step
+### SSH Protocol -> Two-Step
 
 Remote forwarding is fundamentally different because the *server* must open channels back *to the client*. This requires a two-step protocol:
 
@@ -225,7 +225,7 @@ If `-R` setup fails (server refuses the global request), by default OpenSSH cont
 
 ---
 
-## 3. Dynamic Port Forwarding (-D) — SOCKS5
+## 3. Dynamic Port Forwarding (-D) -> SOCKS5
 
 ### The Problem It Solves
 
@@ -360,7 +360,7 @@ static int socks_accept_cb(socket_t fd, int revents, void *userdata) {
     return 0;
 }
 
-/* data callback — runs state machine */
+/* data callback -> runs state machine */
 static int socks_data_cb(socket_t fd, int revents, void *userdata) {
     struct socks5_conn *c = userdata;
     /* run state machine transitions as mentioned above */
@@ -372,7 +372,7 @@ static int socks_data_cb(socket_t fd, int revents, void *userdata) {
 
 ---
 
-## 4. ssh_connector — How Data Bridging Works
+## 4. ssh_connector -> How Data Bridging Works
 
 Every forwarding type eventually needs to bridge a file descriptor (local socket) with an SSH channel. `ssh_connector` will handles this.
 
@@ -437,7 +437,7 @@ For forwarded TCP connections we use `SSH_CONNECTOR_STDOUT`. The `SSH_CONNECTOR_
 
 ---
 
-## 5. ssh_event — The Event Loop
+## 5. ssh_event -> The Event Loop
 
 All three forwarding modes share one event loop. The event loop multiplexes:
 
@@ -503,7 +503,7 @@ The parser counts colons and handles IPv6 brackets. This is the same parser need
 
 ---
 
-## 7. Config Directives — Current State
+## 7. Config Directives -> Current State
 
 In `src/config.c` all forwarding directives are currently `SOC_NA` (silently discarded):
 
@@ -517,10 +517,10 @@ In `src/config.c` all forwarding directives are currently `SOC_NA` (silently dis
 | `ClearAllForwardings` | SOC_NA      | Cancel all forwarding specs on the connection|
 
 Promoting these to `SSH_OPTIONS_*` constants will require changes to:
-- `include/libssh/libssh.h` — adding enum values to `enum ssh_options_e`
-- `include/libssh/session.h` — adding fields to `struct ssh_session_struct`
-- `src/config.c` — change `SOC_NA` → `SOC_SESSION`, add case to `ssh_config_parse_global()`
-- `src/options.c` — add case to `ssh_options_set()` and `ssh_options_get()`
+- `include/libssh/libssh.h` -> adding enum values to `enum ssh_options_e`
+- `include/libssh/session.h` -> adding fields to `struct ssh_session_struct`
+- `src/config.c` -> change `SOC_NA` → `SOC_SESSION`, add case to `ssh_config_parse_global()`
+- `src/options.c` -> add case to `ssh_options_set()` and `ssh_options_get()`
 
 For forwarding specs (`LocalForward`/`RemoteForward`/`DynamicForward`) we also need a linked list of `struct forward_spec` attached to the session, since a config file can have multiple `LocalForward` lines.
 
@@ -574,7 +574,7 @@ If `ClearAllForwardings yes` is seen in config: ignore all LocalForward/RemoteFo
 | src/connector.c| `ssh_connector_new/set_in_fd/set_out_fd/set_in_channel/set_out_channel` |
 | src/poll.c| `ssh_event_new`, `ssh_event_add_fd`, `ssh_event_add_session`, `ssh_event_add_connector`, `ssh_event_dopoll` |
 | src/config.c| Forwarding directives currently at SOC_NA |
-| src/options.c | `ssh_options_set/get` — where we add new SSH_OPTIONS_* cases |
+| src/options.c | `ssh_options_set/get` -> where we add new SSH_OPTIONS_* cases |
 | include/libssh/libssh.h | `enum ssh_options_e`, `enum ssh_channel_type_e`, `enum ssh_connector_flags_e` |
 | examples/sshnetcat.c | Minimal direct-tcpip client example |
 | examples/sshd_direct-tcpip.c| Server-side direct-tcpip with event loop pattern |

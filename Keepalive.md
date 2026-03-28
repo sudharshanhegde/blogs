@@ -18,9 +18,9 @@ Keepalive solves all three: it sends small probe packets during silence to keep 
 
 There are actually two separate keepalive systems that can both be active at the same time, working at different levels:
 
-**TCP keepalive (SO_KEEPALIVE socket option)** — This is done by the OS kernel, not by our application. When this is enabled on a socket, the kernel automatically sends TCP-level probes if the connection has been completely silent for a while (typically 2 hours by default on Linux,which is configurable via `/proc/sys/net/ipv4`). The problem with this is that 2-hour default is far too long for interactive sessions, and the interval is set system-wide, not per-connection.
+**TCP keepalive (SO_KEEPALIVE socket option)** -> This is done by the OS kernel, not by our application. When this is enabled on a socket, the kernel automatically sends TCP-level probes if the connection has been completely silent for a while (typically 2 hours by default on Linux,which is configurable via `/proc/sys/net/ipv4`). The problem with this is that 2-hour default is far too long for interactive sessions, and the interval is set system-wide, not per-connection.
 
-**SSH-level keepalive** — This is done by the SSH application itself, sending real SSH protocol messages during silence. We control the interval and failure count precisely. This is what `ServerAliveInterval` and `ServerAliveCountMax` control.
+**SSH-level keepalive** -> This is done by the SSH application itself, sending real SSH protocol messages during silence. We control the interval and failure count precisely. This is what `ServerAliveInterval` and `ServerAliveCountMax` control.
 
 SSH-level keepalive is more useful for interactive use because we can set it to 15 or 30 seconds and detect a dead connection quickly, rather than waiting hours.
 
@@ -87,7 +87,7 @@ int ssh_send_keepalive(ssh_session session)
 }
 ```
 
-This is exposed as a server-side API, but it just calls `ssh_global_request()` — which we can call directly from the client side too. There is no reason a client cannot use the same mechanism.
+This is exposed as a server-side API, but it just calls `ssh_global_request()` -> which we can call directly from the client side too. There is no reason a client cannot use the same mechanism.
 
 ## What ssh_global_request Does
 
@@ -162,7 +162,7 @@ while (!done) {
 
     now = time(NULL);
     if (now >= ka.last_activity + ka.interval) {
-        /* interval elapsed, no activity from server — send probe */
+        /* interval elapsed, no activity from server -> send probe */
         ka.unanswered++;
         if (ka.unanswered > ka.max_count) {
             fprintf(stderr, "Timeout, server not responding.\n");
@@ -196,7 +196,7 @@ setsockopt(ssh_get_fd(session), SOL_SOCKET, SO_KEEPALIVE, &optval, sizeof(optval
 
 `setsockopt()` is a system call for configuring socket behavior. The `SOL_SOCKET` level means the option applies to the socket generically (not to TCP specifically). `SO_KEEPALIVE` at this level just switches on the kernel's built-in TCP keepalive prober.
 
-## Config Directives — Current State
+## Config Directives -> Current State
 
 All three keepalive directives are `SOC_UNSUPPORTED` in (src/config.c) and they are parsed from `~/.ssh/config` but thrown away:
 

@@ -23,7 +23,7 @@ Agent forwarding solves this by tunnelling the agent protocol through the SSH co
 
 We SSH from our laptop into `server-A` with `-A` (agent forwarding enabled). Our laptop's `ssh-agent` holds the private key. The first SSH tunnel is now open.
 
-From the shell on `server-A`, we run `ssh server-B`. A second tunnel is established. `server-B` sends a challenge that requires a signature from our private key — but `server-A` does not have that key.
+From the shell on `server-A`, we run `ssh server-B`. A second tunnel is established. `server-B` sends a challenge that requires a signature from our private key -> but `server-A` does not have that key.
 
 Because agent forwarding is active, `server-A`'s SSH client does not give up. Instead, it opens a special channel called `auth-agent@openssh.com` back through the first tunnel to our laptop. Our laptop's SSH client receives this request and connects the channel to our local `ssh-agent` via `$SSH_AUTH_SOCK`.
 

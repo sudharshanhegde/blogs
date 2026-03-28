@@ -26,23 +26,23 @@ Payload        → variable length
 Padding
 ```
 
-The first byte of the payload is the **message type** — a number that tells you what the packet means:
+The first byte of the payload is the **message type** -> a number that tells you what the packet means:
 
 ```
-20   SSH_MSG_KEXINIT                   — start key exchange
-21   SSH_MSG_NEWKEYS                   — switch to encrypted keys
-50   SSH_MSG_USERAUTH_REQUEST          — authentication attempt
-90   SSH_MSG_CHANNEL_OPEN              — "I want to open a channel"
-91   SSH_MSG_CHANNEL_OPEN_CONFIRMATION — "yes, channel is open"
-92   SSH_MSG_CHANNEL_OPEN_FAILURE      — "no, refused"
-94   SSH_MSG_CHANNEL_DATA              — "here is data for channel N"
-96   SSH_MSG_CHANNEL_EOF               — "I'm done sending on channel N"
-97   SSH_MSG_CHANNEL_CLOSE             — "channel N is closed"
+20   SSH_MSG_KEXINIT                   -> start key exchange
+21   SSH_MSG_NEWKEYS                   -> switch to encrypted keys
+50   SSH_MSG_USERAUTH_REQUEST          -> authentication attempt
+90   SSH_MSG_CHANNEL_OPEN              -> "I want to open a channel"
+91   SSH_MSG_CHANNEL_OPEN_CONFIRMATION -> "yes, channel is open"
+92   SSH_MSG_CHANNEL_OPEN_FAILURE      -> "no, refused"
+94   SSH_MSG_CHANNEL_DATA              -> "here is data for channel N"
+96   SSH_MSG_CHANNEL_EOF               -> "I'm done sending on channel N"
+97   SSH_MSG_CHANNEL_CLOSE             -> "channel N is closed"
 ```
 
-Every packet that carries channel data includes a **channel number** — a 4-byte integer that says which channel this data belongs to. That's how the receiver separates the streams.
+Every packet that carries channel data includes a **channel number** -> a 4-byte integer that says which channel this data belongs to. That's how the receiver separates the streams.
 
-libssh reads raw bytes off the TCP socket, decrypts them, then looks at the message type and dispatches to the right handler. We never see any of this — but it explains why `ssh_event_dopoll()` can feed data to the right channel callback.
+libssh reads raw bytes off the TCP socket, decrypts them, then looks at the message type and dispatches to the right handler. We never see any of this -> but it explains why `ssh_event_dopoll()` can feed data to the right channel callback.
 
 ---
 
@@ -53,7 +53,7 @@ Each side keeps a table of open channels. The client picks a number starting fro
 - When the client sends data, it uses the **server's** channel number as the recipient
 - When the server sends data, it uses the **client's** channel number as the recipient
 
-This is like two people using different names for the same conversation — both sides know which channel is which because they agreed during the open handshake.
+This is like two people using different names for the same conversation -> both sides know which channel is which because they agreed during the open handshake.
 
 libssh handles all of this internally. We never deal with channel numbers directly. When you call `ssh_channel_new()`, libssh assigns a number. When data arrives for that channel, libssh routes it to the right `ssh_channel` object.
 
@@ -62,11 +62,11 @@ libssh handles all of this internally. We never deal with channel numbers direct
 ## Channel Types
 
 ```
-"session"                — a shell, command execution, or subsystem (sftp)
-"direct-tcpip"           — local port forward: "connect to host:port for me"
-"forwarded-tcpip"        — remote port forward: server initiated, going to client
-"auth-agent@openssh.com" — agent forwarding
-"x11"                    — X11 forwarding
+"session"                -> a shell, command execution, or subsystem (sftp)
+"direct-tcpip"           -> local port forward: "connect to host:port for me"
+"forwarded-tcpip"        -> remote port forward: server initiated, going to client
+"auth-agent@openssh.com" -> agent forwarding
+"x11"                    -> X11 forwarding
 ```
 
 ---
@@ -79,7 +79,7 @@ libssh handles all of this internally. We never deal with channel numbers direct
 ssh_channel channel = ssh_channel_new(session);
 ```
 
-This allocates an `ssh_channel` object. The channel is not open yet — nothing has been sent to the server.
+This allocates an `ssh_channel` object. The channel is not open yet -> nothing has been sent to the server.
 
 ```c
 int rc = ssh_channel_open_session(channel);
@@ -117,7 +117,7 @@ int nbytes = ssh_channel_read(channel, buf, sizeof(buf), 0);
 /* last arg: 0 = stdout, 1 = stderr */
 ```
 
-### Callbacks — How Data Arrives in the Event Loop
+### Callbacks -> How Data Arrives in the Event Loop
 
 ```c
 struct ssh_channel_callbacks_struct cb = {
@@ -177,7 +177,7 @@ Bytes from `client_fd` go into the channel; bytes from the channel go back to `c
 
 ## Remote Port Forwarding
 
-When you run `ssh -R 9090:localhost:22`, you want the server to listen on port 9090 and, when someone connects, forward that connection back to your machine at `localhost:22`. This is the reverse direction — the server initiates the channel, not us.
+When you run `ssh -R 9090:localhost:22`, you want the server to listen on port 9090 and, when someone connects, forward that connection back to your machine at `localhost:22`. This is the reverse direction -> the server initiates the channel, not us.
 
 ```c
 int actual_port = 0;

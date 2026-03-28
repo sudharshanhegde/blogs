@@ -52,7 +52,7 @@ When a graphical application starts, it reads `DISPLAY`, connects to the corresp
 
 ## The Problem X11 Forwarding Solves
 
-we SSH into a remote server. we run `xclock` there — a simple graphical clock. `xclock` tries to connect to an X server. But on the remote server there is no X server. So there is no screen. The `DISPLAY` variable is not set. `xclock` will fail with an error.
+we SSH into a remote server. we run `xclock` there -> a simple graphical clock. `xclock` tries to connect to an X server. But on the remote server there is no X server. So there is no screen. The `DISPLAY` variable is not set. `xclock` will fail with an error.
 
 X11 forwarding tunnels the X protocol over SSH so that graphical applications running on the remote server can display their windows on our local screen.
 
@@ -117,7 +117,7 @@ After accepting the `x11` channel, the client needs to connect to the real local
 
 Then it bridges: `x11 channel` <-> `local X server socket`, using `ssh_connector`, exactly like port forwarding.
 
-**Step 6 — Fake cookie gets swapped for real cookie.**
+**Step 6 -> Fake cookie gets swapped for real cookie.**
 
 This is the step that makes untrusted forwarding work. The remote application sent the fake cookie in its X handshake. As those bytes travel through the channel to the client, the client must find the fake cookie bytes at the start of the stream and replace them with the real cookie before forwarding to the real X server.
 
@@ -135,11 +135,11 @@ int ssh_channel_request_x11(ssh_channel channel,
                              int screen_number);
 ```
 
-`channel` — the session channel (the shell channel, not a new channel)
-`single_connection` — if 1, only one X application will be forwarded, then forwarding stops
-`protocol` — pass NULL and libssh defaults to "MIT-MAGIC-COOKIE-1"
-`cookie` — pass NULL and libssh generates a random fake cookie for we using `generate_cookie()` internally. If we pass a cookie, that value is used instead (useful for trusted -Y, where we pass our real cookie)
-`screen_number` — pass 0 for the default screen
+`channel` -> the session channel (the shell channel, not a new channel)
+`single_connection` -> if 1, only one X application will be forwarded, then forwarding stops
+`protocol` -> pass NULL and libssh defaults to "MIT-MAGIC-COOKIE-1"
+`cookie` -> pass NULL and libssh generates a random fake cookie for we using `generate_cookie()` internally. If we pass a cookie, that value is used instead (useful for trusted -Y, where we pass our real cookie)
+`screen_number` -> pass 0 for the default screen
 
 Internally `generate_cookie()` (src/channels.c) generates 16 random bytes with `ssh_get_random()` and converts them to a 32-character hex string. `ssh_get_random()` is libssh's cryptographically secure random function, it uses the underlying crypto library (OpenSSL or libgcrypt). we must not use `rand()` for this as a predictable cookie will defeat the entire security model.
 
@@ -160,7 +160,7 @@ ssh_channel ssh_channel_accept_x11(ssh_channel channel, int timeout_ms);
 
 This is polling-based. In our event loop we call it to drain any pending incoming X11 channel open requests from the server.
 
-### Opening an X11 channel (server side — sshd implementation)
+### Opening an X11 channel (server side -> sshd implementation)
 
 ```c
 int ssh_channel_open_x11(ssh_channel channel,
@@ -272,7 +272,7 @@ const char *display = getenv("DISPLAY");
 /* display = ":0" */
 ```
 
-If `DISPLAY` is `:N` or `unix:N` — connect via Unix domain socket:
+If `DISPLAY` is `:N` or `unix:N` -> connect via Unix domain socket:
 ```c
 char path[108];
 int display_num = atoi(strchr(display, ':') + 1);
@@ -294,7 +294,7 @@ The `6000` offset is defined by the X protocol specification. Display 0 = port 6
 
 OpenSSH has a `ForwardX11Timeout` option which stops accepting new X11 channels after a certain time (default 20 minutes). This is a security measure necause if an application on the server tries to connect to X after a long time, it might be a delayed attack. We need a timestamp from when the session started and stop accepting x11 channels after `ForwardX11Timeout` seconds.
 
-## Config Directives — Current State in src/config.c
+## Config Directives -> Current State in src/config.c
 
 All X11-related directives are currently `SOC_NA` (silently discarded):
 

@@ -152,7 +152,7 @@ Storing the two numbers in the session is the easy part. The real work will be i
 
 ### Why We Cannot Use a Background Thread
 
-The obvious approach would be a background thread that sleeps for `server_alive_interval` seconds, calls `ssh_send_keepalive()`, and exits the program if the count exceeds `server_alive_count_max`. This does not work because libssh's session is not thread-safe. The session struct has internal buffers, state machines, and counters that are not protected by locks. If a background thread calls `ssh_send_keepalive()` — which calls `ssh_global_request()` which writes to the session's output buffer all this while the main thread is inside `ssh_event_dopoll()` reading and writing the same socket, we get data corruption and crashes.
+The obvious approach would be a background thread that sleeps for `server_alive_interval` seconds, calls `ssh_send_keepalive()`, and exits the program if the count exceeds `server_alive_count_max`. This does not work because libssh's session is not thread-safe. The session struct has internal buffers, state machines, and counters that are not protected by locks. If a background thread calls `ssh_send_keepalive()` -> which calls `ssh_global_request()` which writes to the session's output buffer all this while the main thread is inside `ssh_event_dopoll()` reading and writing the same socket, we get data corruption and crashes.
 
 The solution is to use `ssh_event_dopoll()`'s `timeout` parameter to wake the main thread up at the right moment.
 
@@ -226,7 +226,7 @@ while (!session_done) {
         }
     } else if (got_data) {
         /*
-         * Data arrived from the server — connection is alive.
+         * Data arrived from the server -> connection is alive.
          * Reset both counters.
          */
         last_activity = now;

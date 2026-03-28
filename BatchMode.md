@@ -170,7 +170,7 @@ The server tries keyboard-interactive. "Security question? OTP?" The client has 
 
 There is nothing left to try. No more methods. No more keys. No human to ask.
 
-The client prints to stderr: Permission denied (publickey) — and exits with code 1.
+The client prints to stderr: Permission denied (publickey) -> and exits with code 1.
 
 No hang. No waiting. A fast, clean failure, exactly the way a pipeline needs it.
 

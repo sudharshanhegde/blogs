@@ -4,7 +4,7 @@ When we type `ssh user@server`, the server does not directly ask for a password.
 
 ## What Happens on the Wire
 
-After TCP connection, key exchange, and encryption are established, the client enters the authentication phase. The session is encrypted but not yet authenticated — the server does not know who the client is yet.
+After TCP connection, key exchange, and encryption are established, the client enters the authentication phase. The session is encrypted but not yet authenticated -> the server does not know who the client is yet.
 
 ### `ssh_userauth_none()`
 
@@ -31,7 +31,7 @@ Some old servers skip this and return `SSH_AUTH_SUCCESS` for `none`, meaning no 
 
 ### Trying Methods in Order
 
-The client tries each method the server advertised, stopping when one succeeds. Order matters — public key is preferred because it is non-interactive; password is last because it requires user input.
+The client tries each method the server advertised, stopping when one succeeds. Order matters -> public key is preferred because it is non-interactive; password is last because it requires user input.
 
 ```
 Client → SSH_MSG_USERAUTH_REQUEST  method="publickey"  key=<public key>
@@ -43,7 +43,7 @@ Client → SSH_MSG_USERAUTH_REQUEST  method="publickey"  key=<public key>
 Server → SSH_MSG_USERAUTH_FAILURE  methods="password"  partial=false
 ```
 
-`partial=false` means this was not even a partial success — the method was rejected outright.
+`partial=false` means this was not even a partial success -> the method was rejected outright.
 
 ### Partial Authentication (Multi-Factor)
 
@@ -100,7 +100,7 @@ int rc = ssh_userauth_publickey(session, NULL, key);
 ssh_key_free(key);
 ```
 
-`ssh_userauth_publickey_auto()` tries every key in `~/.ssh/` — `id_ed25519`, `id_rsa`, `id_ecdsa`, etc. — against the server. This is what OpenSSH does by default.
+`ssh_userauth_publickey_auto()` tries every key in `~/.ssh/` -> `id_ed25519`, `id_rsa`, `id_ecdsa`, etc. -> against the server. This is what OpenSSH does by default.
 
 **PKCS#11:** A PKCS#11 provider is a shared library (`.so` file) that lets us use hardware tokens (smart cards, YubiKeys) as if they were key files. The private key never leaves the hardware. We load the provider, ask it for a list of keys, and use those keys for authentication. libssh has partial support for this via `SSH_OPTIONS_PROXYCOMMAND` workarounds; adding proper PKCS#11 support via the `-I` flag is one of the things this project will be implementing.
 
@@ -143,7 +143,7 @@ while (rc == SSH_AUTH_INFO) {
 
 ### Password
 
-The client sends the password in plaintext — but inside the encrypted SSH channel, so it is safe on the wire.
+The client sends the password in plaintext -> but inside the encrypted SSH channel, so it is safe on the wire.
 
 ```c
 int rc = ssh_userauth_password(session, NULL, "my_password");
@@ -157,7 +157,7 @@ This is tried last because:
 
 ### GSSAPI (Kerberos)
 
-No passwords, no keys — a Kerberos ticket proves identity. Transparent to the user if properly configured.
+No passwords, no keys -> a Kerberos ticket proves identity. Transparent to the user if properly configured.
 
 ```c
 int rc = ssh_userauth_gssapi(session);
@@ -173,7 +173,7 @@ OpenSSH's default order is:
 gssapi-with-mic,hostbased,publickey,keyboard-interactive,password
 ```
 
-The `PreferredAuthentications` config option lets users change this order. This is currently `SSH_OPTIONS_UNSUPPORTED` in libssh — it is silently ignored and the order is always hardcoded.
+The `PreferredAuthentications` config option lets users change this order. This is currently `SSH_OPTIONS_UNSUPPORTED` in libssh -> it is silently ignored and the order is always hardcoded.
 
 **Plan for implementation:** Parse the comma-separated string, build an ordered list, and iterate through it during authentication.
 
@@ -193,7 +193,7 @@ for (int i = 0; methods[i] != NULL; i++) {
 }
 ```
 
-### `BatchMode` — Disabling Interactive Prompts
+### `BatchMode` -> Disabling Interactive Prompts
 
 When running SSH in a script:
 
@@ -201,9 +201,9 @@ When running SSH in a script:
 ssh server "backup.sh" < /dev/null
 ```
 
-There is no user at a terminal. If the server asks for a password, nobody can type it — the script hangs forever.
+There is no user at a terminal. If the server asks for a password, nobody can type it -> the script hangs forever.
 
-`BatchMode yes` tells SSH: if any authentication method would require user input, skip it entirely. Only try methods that can succeed without a prompt — `publickey` and `GSSAPI`. If all non-interactive methods fail, return an error immediately instead of prompting.
+`BatchMode yes` tells SSH: if any authentication method would require user input, skip it entirely. Only try methods that can succeed without a prompt -> `publickey` and `GSSAPI`. If all non-interactive methods fail, return an error immediately instead of prompting.
 
 **Plan for implementation:**
 
@@ -221,7 +221,7 @@ for (int i = 0; methods[i] != NULL; i++) {
 }
 ```
 
-This is also `SSH_OPTIONS_UNSUPPORTED` — this project will implement it.
+This is also `SSH_OPTIONS_UNSUPPORTED` -> this project will implement it.
 
 ### `NumberOfPasswordPrompts`
 
@@ -248,7 +248,7 @@ while (attempts < max_prompts) {
 }
 ```
 
-This is also `SSH_OPTIONS_UNSUPPORTED` — this project will implement it.
+This is also `SSH_OPTIONS_UNSUPPORTED` -> this project will implement it.
 
 ---
 
@@ -258,7 +258,7 @@ This is also `SSH_OPTIONS_UNSUPPORTED` — this project will implement it.
 int authenticate(ssh_session session, struct cli_opts *opts) {
     int rc;
 
-    /* Step 1: none auth — get list of accepted methods */
+    /* Step 1: none auth -> get list of accepted methods */
     rc = ssh_userauth_none(session, NULL);
     if (rc == SSH_AUTH_SUCCESS) return SSH_AUTH_SUCCESS;  /* server accepts anyone */
     if (rc == SSH_AUTH_ERROR)   return SSH_AUTH_ERROR;
@@ -288,4 +288,4 @@ int authenticate(ssh_session session, struct cli_opts *opts) {
 }
 ```
 
-This is what `example/authentication.c` approximates but does not fully implement — it has no `PreferredAuthentications` ordering, no `BatchMode`, no `NumberOfPasswordPrompts`, and does not handle `SSH_AUTH_PARTIAL` properly in all paths. This project will address all of these gaps.
+This is what `example/authentication.c` approximates but does not fully implement -> it has no `PreferredAuthentications` ordering, no `BatchMode`, no `NumberOfPasswordPrompts`, and does not handle `SSH_AUTH_PARTIAL` properly in all paths. This project will address all of these gaps.
