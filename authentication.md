@@ -11,8 +11,8 @@ After TCP connection, key exchange, and encryption are established, the client e
 The client sends an authentication request with method `"none"`. The server responds with `SSH_MSG_USERAUTH_FAILURE` and includes a list of authentication methods it accepts.
 
 ```
-Client → SSH_MSG_USERAUTH_REQUEST  method="none"
-Server → SSH_MSG_USERAUTH_FAILURE  methods="publickey,keyboard-interactive,password"
+Client -> SSH_MSG_USERAUTH_REQUEST  method="none"
+Server -> SSH_MSG_USERAUTH_FAILURE  methods="publickey,keyboard-interactive,password"
 ```
 
 We get a comma-separated list; libssh reads it and returns a bitmask:
@@ -34,13 +34,13 @@ Some old servers skip this and return `SSH_AUTH_SUCCESS` for `none`, meaning no 
 The client tries each method the server advertised, stopping when one succeeds. Order matters -> public key is preferred because it is non-interactive; password is last because it requires user input.
 
 ```
-Client → SSH_MSG_USERAUTH_REQUEST  method="publickey"  key=<public key>
-Server → SSH_MSG_USERAUTH_SUCCESS
+Client -> SSH_MSG_USERAUTH_REQUEST  method="publickey"  key=<public key>
+Server -> SSH_MSG_USERAUTH_SUCCESS
 ```
 
 ```
-Client → SSH_MSG_USERAUTH_REQUEST  method="publickey"  key=<public key>
-Server → SSH_MSG_USERAUTH_FAILURE  methods="password"  partial=false
+Client -> SSH_MSG_USERAUTH_REQUEST  method="publickey"  key=<public key>
+Server -> SSH_MSG_USERAUTH_FAILURE  methods="password"  partial=false
 ```
 
 `partial=false` means this was not even a partial success -> the method was rejected outright.
@@ -50,7 +50,7 @@ Server → SSH_MSG_USERAUTH_FAILURE  methods="password"  partial=false
 Some servers require two methods. After the first succeeds, the server sends:
 
 ```
-Server → SSH_MSG_USERAUTH_FAILURE  methods="keyboard-interactive"  partial=true
+Server -> SSH_MSG_USERAUTH_FAILURE  methods="keyboard-interactive"  partial=true
 ```
 
 `partial=true` means "that method worked, and I need one more." The client must now also succeed at `keyboard-interactive`.
@@ -82,11 +82,11 @@ If we only check for `SSH_AUTH_SUCCESS` and return on anything else, multi-facto
 The client says "I have this public key, will you accept it?" The server checks its `authorized_keys` file. If the public key is there, the server says "prove you have the corresponding private key." The client signs a challenge with the private key and sends the signature. The server verifies.
 
 ```
-Client → USERAUTH_REQUEST  method="publickey"  has_sig=false  pubkey=<key>
-Server → SSH_MSG_USERAUTH_PK_OK       ← "yes, I'd accept that key"
+Client -> USERAUTH_REQUEST  method="publickey"  has_sig=false  pubkey=<key>
+Server -> SSH_MSG_USERAUTH_PK_OK       ← "yes, I'd accept that key"
 
-Client → USERAUTH_REQUEST  method="publickey"  has_sig=true  pubkey=<key>  sig=<signature>
-Server → SSH_MSG_USERAUTH_SUCCESS
+Client -> USERAUTH_REQUEST  method="publickey"  has_sig=true  pubkey=<key>  sig=<signature>
+Server -> SSH_MSG_USERAUTH_SUCCESS
 ```
 
 ```c
@@ -111,15 +111,15 @@ This is **not** the same as password auth. It is a flexible challenge-response p
 Why not just use password auth for passwords? Because keyboard-interactive can be used for OTPs, Duo push, TOTP codes, or any arbitrary challenge. The server controls the prompts entirely.
 
 ```
-Server → SSH_MSG_USERAUTH_INFO_REQUEST
+Server -> SSH_MSG_USERAUTH_INFO_REQUEST
     name="Password"
     instruction=""
     prompts=["Password: " (echo=false), "Verification code: " (echo=true)]
 
-Client → SSH_MSG_USERAUTH_INFO_RESPONSE
+Client -> SSH_MSG_USERAUTH_INFO_RESPONSE
     answers=["hunter2", "123456"]
 
-Server → SSH_MSG_USERAUTH_SUCCESS
+Server -> SSH_MSG_USERAUTH_SUCCESS
 ```
 
 The libssh API:
