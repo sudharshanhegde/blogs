@@ -289,3 +289,4 @@ int authenticate(ssh_session session, struct cli_opts *opts) {
 ```
 
 This is what `example/authentication.c` approximates but does not fully implement -> it has no `PreferredAuthentications` ordering, no `BatchMode`, no `NumberOfPasswordPrompts`, and does not handle `SSH_AUTH_PARTIAL` properly in all paths. This project will address all of these gaps.
+
